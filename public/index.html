@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brote – Microhuerto para tu cocina</title>
+  <meta name="description" content="Kit de microhuerto con semillas, sustrato y maceta biodegradable. Pídelo en línea y cosecha tus primeras hojas en dos semanas.">
+  <meta name="theme-color" content="#15352a">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="img/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Brote">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+<a class="salto" href="#contenido">Saltar al contenido</a>
+
+<header class="encabezado">
+  <div class="contenedor barra">
+    <a class="marca" href="#inicio" aria-label="Brote, ir al inicio">
+      <img src="img/logo.svg" alt="" width="38" height="38"><span>Brote</span>
+    </a>
+    <button id="menu" class="menu-boton" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="nav" aria-label="Principal">
+      <ul>
+        <li><a href="#proyecto">Proyecto</a></li>
+        <li><a href="#kit">El kit</a></li>
+        <li><a href="#crecimiento">Cómo crece</a></li>
+        <li><a href="#video">Video</a></li>
+        <li><a href="#seguimiento">Mi pedido</a></li>
+        <li><a class="btn btn-chico" href="#comprar">Pedir kit</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="contenido">
+  <section class="hero" id="inicio">
+    <div class="contenedor hero-grid">
+      <div class="hero-texto">
+        <h1>Un huerto pequeño en la ventana de tu cocina</h1>
+        <p class="entrada">Brote es un kit listo para sembrar. Lo pides en línea, llega a tu casa con todo incluido y en dos semanas cortas tus primeras hierbas frescas.</p>
+        <p class="acciones">
+          <a class="btn" href="#comprar">Pedir mi kit</a>
+          <a class="btn btn-claro" href="#crecimiento">Ver cómo crece</a>
+          <button id="instalar" class="btn btn-claro" type="button" hidden>Instalar app</button>
+        </p>
+      </div>
+      <figure class="ventana">
+        <img src="img/etapa-3.svg" alt="Maceta con albahaca, cilantro y hierbabuena listas para cosechar" width="1280" height="720">
+      </figure>
+    </div>
+  </section>
+
+  <section id="proyecto">
+    <div class="contenedor dos">
+      <div>
+        <h2>Cultivar en casa no debería requerir un jardín</h2>
+        <p>Somos un equipo de estudiantes que observó un problema común: en la ciudad muchas personas viven en departamentos pequeños y quieren cocinar con ingredientes frescos, pero no tienen espacio ni experiencia para sembrar.</p>
+        <p>Nuestra propuesta es un kit compacto y biodegradable, con una guía paso a paso para que la primera cosecha salga bien desde el primer intento.</p>
+      </div>
+      <ul class="valores">
+        <li><h3>Compacto</h3><p>Cabe en un alféizar, un estante o una esquina de la cocina.</p></li>
+        <li><h3>Sostenible</h3><p>La maceta de fibra de coco se planta directo en la tierra y no deja residuos.</p></li>
+        <li><h3>Para principiantes</h3><p>No necesitas experiencia: la guía te dice cuándo sembrar y cuánto regar.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="kit" class="alterna">
+    <div class="contenedor dos">
+      <img class="ilustracion" src="img/kit.svg" alt="Contenido del kit: maceta, sobre de semillas, bolsa de sustrato y guía" width="1280" height="720" loading="lazy">
+      <div>
+        <h2>Todo lo que necesitas viene en la caja</h2>
+        <dl class="componentes">
+          <div><dt>Maceta</dt><dd>Fibra de coco biodegradable.</dd></div>
+          <div><dt>Semillas</dt><dd>Albahaca, cilantro y hierbabuena.</dd></div>
+          <div><dt>Sustrato</dt><dd>Mezcla lista para sembrar.</dd></div>
+          <div><dt>Guía</dt><dd>Siembra y riego, paso a paso.</dd></div>
+        </dl>
+        <p class="precio">Precio por kit <strong id="precio">$349.00</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="crecimiento">
+    <div class="contenedor">
+      <h2>Así crece tu huerto en 14 días</h2>
+      <p class="intro">Mueve el control para ver cada etapa, desde la siembra hasta la primera cosecha.</p>
+      <div class="etapas">
+        <figure class="etapa-imagen">
+          <img id="etapa-img" src="img/etapa-0.svg" alt="Maceta recién sembrada" width="1280" height="720">
+        </figure>
+        <div class="etapa-panel">
+          <h3 id="etapa-titulo">Día 0 · Siembra</h3>
+          <p id="etapa-texto">Reparte las semillas sobre el sustrato húmedo y cúbrelas con una capa delgada. Coloca la maceta cerca de una ventana con luz.</p>
+          <label class="control" for="etapa">Etapa del cultivo
+            <input id="etapa" type="range" min="0" max="3" step="1" value="0" aria-valuetext="Día 0">
+          </label>
+          <div class="marcas" aria-hidden="true"><span>Día 0</span><span>Día 3</span><span>Día 7</span><span>Día 14</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="video" class="alterna">
+    <div class="contenedor angosto-video">
+      <h2>Míralo en acción</h2>
+      <video class="video" controls preload="none" poster="media/poster.jpg">
+        <source src="media/brote.mp4" type="video/mp4">
+        Tu navegador no puede reproducir video. <a href="media/brote.mp4">Descárgalo aquí</a>.
+      </video>
+      <p class="nota">Resumen en 15 segundos del proceso, de la siembra a la cosecha.</p>
+    </div>
+  </section>
+
+  <section id="comprar">
+    <div class="contenedor dos formulario-zona">
+      <div>
+        <h2>Haz tu pedido</h2>
+        <p>Completa tus datos y te enviamos un folio para consultar el estado de tu envío.</p>
+        <p class="precio">Total <strong id="total">$349.00</strong></p>
+      </div>
+      <form id="form-pedido">
+        <label>Nombre completo <input name="nombre" required minlength="3" autocomplete="name"></label>
+        <label>Correo electrónico <input name="correo" type="email" required autocomplete="email"></label>
+        <label>Teléfono (opcional) <input name="telefono" type="tel" autocomplete="tel"></label>
+        <label>Dirección de envío <textarea name="direccion" rows="3" required minlength="10" autocomplete="street-address"></textarea></label>
+        <div class="fila">
+          <label>Cantidad de kits <input id="cantidad" name="cantidad" type="number" min="1" max="10" value="1" required></label>
+          <label>Forma de pago
+            <select name="pago" required>
+              <option value="Transferencia">Transferencia bancaria</option>
+              <option value="Contra entrega">Pago contra entrega</option>
+            </select>
+          </label>
+        </div>
+        <button class="btn" type="submit">Confirmar pedido</button>
+        <div id="resultado" role="status"></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="seguimiento" class="alterna">
+    <div class="contenedor dos formulario-zona">
+      <div>
+        <h2>Consulta tu pedido</h2>
+        <p>Escribe el folio que recibiste al confirmar y el correo con el que pediste.</p>
+      </div>
+      <form id="form-seg">
+        <label>Folio <input name="folio" placeholder="BR-1A2B3C" required></label>
+        <label>Correo con el que pediste <input name="correo" type="email" required></label>
+        <button class="btn" type="submit">Consultar</button>
+        <div id="estado" role="status"></div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="pie">
+  <div class="contenedor pie-grid">
+    <div>
+      <a class="marca" href="#inicio"><img src="img/logo.svg" alt="" width="34" height="34"><span>Brote</span></a>
+      <p>Microhuerto para tu cocina.</p>
+    </div>
+    <nav aria-label="Secundaria">
+      <h3>Explora</h3>
+      <ul>
+        <li><a href="#proyecto">Proyecto</a></li>
+        <li><a href="#kit">El kit</a></li>
+        <li><a href="#comprar">Comprar</a></li>
+      </ul>
+    </nav>
+    <div>
+      <h3>Síguenos</h3>
+      <ul>
+        <li><a href="https://facebook.com/" target="_blank" rel="noopener">Facebook</a></li>
+        <li><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://tiktok.com/" target="_blank" rel="noopener">TikTok</a></li>
+      </ul>
+    </div>
+  </div>
+  <p class="derechos">© 2026 Brote. Todos los derechos reservados.</p>
+</footer>
+
+<script src="js/ui.js"></script>
+<script src="js/pedidos.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>
