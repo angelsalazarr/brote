@@ -59,7 +59,8 @@ $("#form-seg").onsubmit = async (e) => {
   try {
     const r = await fetch(`/api/pedidos/${encodeURIComponent(folio.trim())}?correo=${encodeURIComponent(correo.trim())}`);
     const d = await r.json();
-    return r.ok ? mostrar(salida, true, texto(d)) : mostrar(salida, false, d.error);
+    const guardado = r.headers.get("X-Desde-Cache") ? " · Sin conexión: es la última información guardada." : "";
+    return r.ok ? mostrar(salida, true, texto(d) + guardado) : mostrar(salida, false, d.error);
   } catch {
     const p = leerLocal().find((x) => x.folio === folio.trim().toUpperCase() && x.correo === correo.trim().toLowerCase());
     p ? mostrar(salida, true, texto(p)) : mostrar(salida, false, "No encontramos ese pedido. Revisa el folio y el correo.");

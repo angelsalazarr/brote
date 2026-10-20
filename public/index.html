@@ -36,6 +36,7 @@
         <li><a href="#crecimiento">Cómo crece</a></li>
         <li><a href="#video">Video</a></li>
         <li><a href="#seguimiento">Mi pedido</a></li>
+        <li><a href="#sin-conexion">Sin conexión</a></li>
         <li><a class="btn btn-chico" href="#comprar">Pedir kit</a></li>
       </ul>
     </nav>
@@ -163,6 +164,38 @@
       </form>
     </div>
   </section>
+  <section id="sin-conexion">
+    <div class="contenedor dos formulario-zona">
+      <div>
+        <h2>Brote también funciona sin conexión</h2>
+        <p>La app guarda sus archivos en la caché del navegador con un Service Worker. Así carga rápido, se puede instalar y sigue abriendo aunque te quedes sin internet. Tu última consulta de pedido también queda guardada.</p>
+        <p id="conexion" class="conexion" role="status"></p>
+        <p class="nota">Pruébalo: abre las herramientas del navegador (F12) › Application › Service Workers › marca «Offline» y recarga la página.</p>
+      </div>
+      <div id="panel-cache" class="panel-cache">
+        <div class="panel-cabecera">
+          <h3>Lo que está guardado</h3>
+          <span id="cache-resumen" class="nota"></span>
+        </div>
+        <div id="cache-lista" class="cache-lista"></div>
+        <form id="form-cache">
+          <label><span>Ruta de un archivo, o <code>nota:</code> seguido de un texto</span>
+            <input id="cache-ruta" placeholder="img/etapa-2.svg" autocomplete="off">
+          </label>
+          <div class="acciones">
+            <button class="btn btn-chico" type="submit">Guardar</button>
+            <button id="cache-buscar" class="btn btn-claro btn-chico" type="button">Buscar</button>
+          </div>
+        </form>
+        <div class="acciones">
+          <button id="cache-extras" class="btn btn-claro btn-chico" type="button">Guardar extras</button>
+          <button id="cache-actualizar" class="btn btn-claro btn-chico" type="button">Actualizar lista</button>
+          <button id="cache-vaciar" class="btn btn-claro btn-chico" type="button">Vaciar caché</button>
+        </div>
+        <div id="cache-aviso" role="status"></div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="pie">
@@ -194,5 +227,6 @@
 <script src="js/ui.js"></script>
 <script src="js/pedidos.js"></script>
 <script src="js/pwa.js"></script>
+<script src="js/cache.js"></script>
 </body>
 </html>
