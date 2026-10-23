@@ -4,7 +4,7 @@
    - DINAMICO: páginas e imágenes que se piden después (network first con respaldo en caché).
    - API: respuestas GET de la API pública (stale-while-revalidate para /api/config
      y network first para el seguimiento de pedidos, así se puede consultar sin conexión). */
-const VERSION = "v4";
+const VERSION = "v5";
 const ESTATICO = `brote-estatico-${VERSION}`;
 const DINAMICO = `brote-dinamico-${VERSION}`;
 const API = `brote-api-${VERSION}`;

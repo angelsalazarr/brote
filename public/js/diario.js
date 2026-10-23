@@ -109,14 +109,17 @@ $("#siembra").onchange = async (e) => {
   pintar();
 };
 
+let archivoElegido = null; // la foto viene de la cámara o de la galería
+
 $("#form-diario").onsubmit = async (e) => {
   e.preventDefault();
-  const archivo = $("#diario-archivo").files[0];
+  const archivo = archivoElegido;
   if (!archivo) return avisoDiario("Elige o toma una foto primero.", false);
   try {
     const imagen = await comprimir(archivo);
     await guardarFoto({ fecha: hoyISO(), nota: $("#diario-nota").value.trim(), imagen });
     e.target.reset();
+    archivoElegido = null;
     $("#diario-vista").hidden = true;
     avisoDiario("Foto guardada en tu diario. Se queda en este dispositivo, incluso sin internet.");
     pintar();
@@ -125,14 +128,17 @@ $("#form-diario").onsubmit = async (e) => {
   }
 };
 
-$("#diario-archivo").onchange = (e) => {
+function elegirFoto(e) {
   const f = e.target.files[0];
+  archivoElegido = f || null;
   const vista = $("#diario-vista");
   if (!f) return (vista.hidden = true);
   URL.revokeObjectURL(vista.src);
   vista.src = URL.createObjectURL(f);
   vista.hidden = false;
-};
+}
+$("#diario-camara").onchange = elegirFoto;
+$("#diario-galeria").onchange = elegirFoto;
 
 $("#diario-lista").onclick = async (e) => {
   const b = e.target.closest("button");

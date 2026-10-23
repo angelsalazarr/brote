@@ -179,10 +179,16 @@
       </div>
       <div class="panel-diario">
         <form id="form-diario" hidden>
-          <label class="diario-camara">
-            <input id="diario-archivo" type="file" accept="image/*" capture="environment">
-            <span class="btn btn-claro">Tomar o elegir foto de hoy</span>
-          </label>
+          <div class="diario-botones">
+            <label class="diario-camara">
+              <input id="diario-camara" type="file" accept="image/*" capture="environment">
+              <span class="btn btn-claro">Tomar foto</span>
+            </label>
+            <label class="diario-camara">
+              <input id="diario-galeria" type="file" accept="image/*">
+              <span class="btn btn-claro">Galería</span>
+            </label>
+          </div>
           <img id="diario-vista" class="diario-vista" alt="Vista previa de la foto" hidden>
           <label>Nota (opcional)
             <input id="diario-nota" maxlength="120" placeholder="Ya salieron las primeras hojas">
