@@ -4,7 +4,7 @@
    - DINAMICO: páginas e imágenes que se piden después (network first con respaldo en caché).
    - API: respuestas GET de la API pública (stale-while-revalidate para /api/config
      y network first para el seguimiento de pedidos, así se puede consultar sin conexión). */
-const VERSION = "v3";
+const VERSION = "v4";
 const ESTATICO = `brote-estatico-${VERSION}`;
 const DINAMICO = `brote-dinamico-${VERSION}`;
 const API = `brote-api-${VERSION}`;
@@ -13,7 +13,7 @@ const LIMITE_DINAMICO = 40; // máximo de entradas en la caché dinámica
 
 const PRECARGA = [
   "./", "index.html", "offline.html", "css/estilos.css",
-  "js/ui.js", "js/pedidos.js", "js/pwa.js", "js/cache.js",
+  "js/ui.js", "js/pedidos.js", "js/pwa.js", "js/cache.js", "js/diario.js",
   "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png",
   "img/logo.svg", "img/etapa-0.svg", "img/etapa-1.svg", "img/etapa-2.svg", "img/etapa-3.svg", "img/kit.svg",
 ];

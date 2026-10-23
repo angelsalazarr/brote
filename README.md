@@ -12,7 +12,7 @@ También puedes abrir `public/index.html` directo en el navegador: el sitio func
 ## Estructura
 - `public/index.html`: estructura de la página (encabezado, navegación, secciones y pie de página).
 - `public/css/estilos.css`: estilos organizados en secciones numeradas, con la paleta en variables.
-- `public/js/ui.js`: menú móvil y etapas del cultivo. `pedidos.js`: pedidos y seguimiento. `pwa.js`: app instalable. `cache.js`: panel de la caché.
+- `public/js/ui.js`: menú móvil y etapas del cultivo. `pedidos.js`: pedidos y seguimiento. `pwa.js`: app instalable. `cache.js`: panel de la caché. `diario.js`: diario de fotos y compartir.
 - `public/img` y `public/media`: ilustraciones y video. `herramientas/generar-recursos.py` los vuelve a generar.
 - `server.js`: servidor Express con base de datos SQLite.
 
@@ -28,6 +28,11 @@ Abre http://localhost:3000 en Chrome o Edge. Aparece el botón «Instalar app» 
 Las rutas `/api/admin` nunca se guardan. Al cambiar `VERSION` en `sw.js`, las cachés viejas se borran en `activate`. Si una página no está guardada y no hay internet, se muestra `offline.html`.
 
 La sección «Sin conexión» de la página (`public/js/cache.js`) muestra lo guardado y permite probar los métodos `caches.keys()`, `caches.open()`, `caches.match()`, `caches.has()`, `caches.delete()`, `cache.add()`, `cache.addAll()`, `cache.put()`, `cache.match()`, `cache.keys()` y `cache.delete()`.
+
+## Diario de mi huerto
+La sección «Mi huerto» (`public/js/diario.js`) permite registrar el día de siembra y tomar una foto diaria de la planta. Las fotos se reducen a 1280 px y se guardan en el dispositivo con IndexedDB (base `brote-diario`), así que funcionan sin conexión y no se suben al servidor. La app muestra el día del cultivo, la etapa y cuántos días faltan para la primera cosecha.
+
+El botón «Compartir mi progreso» genera con canvas una tarjeta de hasta 4 fotos y la comparte con la Web Share API (WhatsApp, Instagram, etc.). Si el navegador no permite compartir archivos, la tarjeta se descarga.
 
 ## Publicarla gratis con pedidos y seguimiento funcionando
 Render ejecuta el servidor y Turso guarda los pedidos de forma permanente (Render por sí solo borra los archivos al reiniciar).

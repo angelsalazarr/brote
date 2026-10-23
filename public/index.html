@@ -36,6 +36,7 @@
         <li><a href="#crecimiento">Cómo crece</a></li>
         <li><a href="#video">Video</a></li>
         <li><a href="#seguimiento">Mi pedido</a></li>
+        <li><a href="#diario">Mi huerto</a></li>
         <li><a href="#sin-conexion">Sin conexión</a></li>
         <li><a class="btn btn-chico" href="#comprar">Pedir kit</a></li>
       </ul>
@@ -164,6 +165,37 @@
       </form>
     </div>
   </section>
+  <section id="diario">
+    <div class="contenedor dos formulario-zona">
+      <div>
+        <h2>El diario de tu huerto</h2>
+        <p>Toma una foto de tu planta cada día y mira cómo crece desde la siembra hasta la primera cosecha. Las fotos se guardan solo en tu teléfono y funcionan sin internet.</p>
+        <p>Cuando quieras, comparte una tarjeta con tu progreso en WhatsApp, Instagram o donde prefieras.</p>
+        <label class="siembra">¿Qué día sembraste?
+          <input id="siembra" type="date">
+        </label>
+        <p id="diario-estado" class="diario-estado"></p>
+        <div class="diario-progreso" aria-hidden="true"><span id="diario-barra"></span></div>
+      </div>
+      <div class="panel-diario">
+        <form id="form-diario" hidden>
+          <label class="diario-camara">
+            <input id="diario-archivo" type="file" accept="image/*" capture="environment">
+            <span class="btn btn-claro">Tomar o elegir foto de hoy</span>
+          </label>
+          <img id="diario-vista" class="diario-vista" alt="Vista previa de la foto" hidden>
+          <label>Nota (opcional)
+            <input id="diario-nota" maxlength="120" placeholder="Ya salieron las primeras hojas">
+          </label>
+          <button class="btn" type="submit">Guardar en mi diario</button>
+        </form>
+        <div id="diario-aviso" role="status"></div>
+        <button id="diario-compartir" class="btn btn-claro" type="button" hidden>Compartir mi progreso</button>
+        <ol id="diario-lista" class="diario-lista"></ol>
+      </div>
+    </div>
+  </section>
+
   <section id="sin-conexion">
     <div class="contenedor dos formulario-zona">
       <div>
@@ -228,5 +260,6 @@
 <script src="js/pedidos.js"></script>
 <script src="js/pwa.js"></script>
 <script src="js/cache.js"></script>
+<script src="js/diario.js"></script>
 </body>
 </html>
