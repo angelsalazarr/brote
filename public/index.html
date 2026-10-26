@@ -176,6 +176,22 @@
         </label>
         <p id="diario-estado" class="diario-estado"></p>
         <div class="diario-progreso" aria-hidden="true"><span id="diario-barra"></span></div>
+        <article id="diario-consejo" class="diario-consejo" hidden>
+          <p class="consejo-dia"></p>
+          <h3></h3>
+          <p class="consejo-texto"></p>
+          <p class="consejo-riego"></p>
+        </article>
+        <div id="recordatorios" class="recordatorios">
+          <h3>Recordatorios en tu teléfono</h3>
+          <p id="push-estado" class="nota">Recibe cada mañana una notificación con el consejo del día de tu huerto.</p>
+          <div class="acciones">
+            <button id="push-activar" class="btn btn-chico" type="button">Activar recordatorios</button>
+            <button id="push-probar" class="btn btn-claro btn-chico" type="button" hidden>Enviar notificación de prueba</button>
+            <button id="push-desactivar" class="btn-mini" type="button" hidden>Desactivar</button>
+          </div>
+          <div id="push-aviso" role="status"></div>
+        </div>
       </div>
       <div class="panel-diario">
         <form id="form-diario" hidden>
@@ -190,6 +206,9 @@
             </label>
           </div>
           <img id="diario-vista" class="diario-vista" alt="Vista previa de la foto" hidden>
+          <label>Fecha de la foto
+            <input id="diario-fecha" type="date">
+          </label>
           <label>Nota (opcional)
             <input id="diario-nota" maxlength="120" placeholder="Ya salieron las primeras hojas">
           </label>
@@ -259,13 +278,18 @@
       </ul>
     </div>
   </div>
-  <p class="derechos">© 2026 Brote. Todos los derechos reservados.</p>
+  <p class="derechos">© 2026 Brote. Todos los derechos reservados. · <span id="version">Versión web</span> · <a href="pruebas.html">Pruebas de la app</a></p>
 </footer>
+
+<div id="toast-actualizacion" class="toast" role="status" hidden>
+  Brote se actualizó a una nueva versión. <button class="btn btn-chico" type="button" onclick="location.reload()">Ver cambios</button>
+</div>
 
 <script src="js/ui.js"></script>
 <script src="js/pedidos.js"></script>
 <script src="js/pwa.js"></script>
 <script src="js/cache.js"></script>
 <script src="js/diario.js"></script>
+<script src="js/push.js"></script>
 </body>
 </html>

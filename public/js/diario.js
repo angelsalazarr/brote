@@ -35,7 +35,27 @@ const guardarAjuste = (k, v) => tx("ajustes", "readwrite", (s) => s.put(v, k));
 const hoyISO = () => new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
 const fechaLarga = (iso) => new Date(iso + "T12:00").toLocaleDateString("es-MX", { day: "numeric", month: "long" });
 const diaDe = (iso, siembra) => Math.max(0, Math.round((Date.parse(iso) - Date.parse(siembra)) / DIA_MS));
-const etapa = (d) => (d >= 14 ? "Cosecha" : d >= 7 ? "Primeras hojas" : d >= 3 ? "Germinación" : "Siembra");
+const etapaBase = (d) => (d >= 14 ? "Cosecha" : d >= 10 ? "Crecimiento" : d >= 7 ? "Primeras hojas" : d >= 3 ? "Germinación" : "Siembra");
+const etapa = (d) => consejos[Math.min(14, d)]?.Etapa || etapaBase(d);
+
+/* ---------- Consejos desde la base de datos del servidor ---------- */
+let consejos = [];
+async function cargarConsejos() {
+  try {
+    const r = await fetch("/api/consejos", { cache: "no-store" });
+    if (r.ok) consejos = await r.json();
+  } catch { /* sin conexión y sin copia: el diario funciona sin consejos */ }
+}
+function pintarConsejo(siembra, dias) {
+  const caja = $("#diario-consejo");
+  const c = consejos[Math.min(14, dias)];
+  if (!siembra || !c) return (caja.hidden = true);
+  caja.hidden = false;
+  caja.querySelector(".consejo-dia").textContent = `Consejo del día ${dias} · ${c.Etapa}`;
+  caja.querySelector("h3").textContent = c.Titulo;
+  caja.querySelector(".consejo-texto").textContent = c.Texto;
+  caja.querySelector(".consejo-riego").textContent = "Riego: " + c.Riego;
+}
 const avisoDiario = (texto, ok = true) => mostrar($("#diario-aviso"), ok, texto);
 
 // Reduce la foto a 1280 px como máximo para no llenar el almacenamiento del teléfono.
@@ -78,6 +98,11 @@ async function pintar() {
     ? `<strong>Día ${dias}</strong> de tu huerto · ${etapa(dias)}${dias < 14 ? ` · faltan ${14 - dias} día(s) para la primera cosecha` : ""}`
     : "Indica el día en que sembraste para empezar tu diario.";
   $("#diario-barra").style.width = Math.min(100, (dias / 14) * 100) + "%";
+  pintarConsejo(siembra, dias);
+  const fecha = $("#diario-fecha");
+  fecha.max = hoyISO();
+  fecha.min = siembra || "";
+  if (!fecha.value || fecha.value > fecha.max || (siembra && fecha.value < siembra)) fecha.value = hoyISO();
 
   urls.forEach(URL.revokeObjectURL);
   urls = [];
@@ -105,6 +130,7 @@ $("#siembra").max = hoyISO();
 $("#siembra").onchange = async (e) => {
   if (!e.target.value) return;
   await guardarAjuste("siembra", e.target.value);
+  dispatchEvent(new CustomEvent("brote:siembra", { detail: e.target.value })); // actualiza los recordatorios push
   avisoDiario("Fecha de siembra guardada.");
   pintar();
 };
@@ -117,7 +143,7 @@ $("#form-diario").onsubmit = async (e) => {
   if (!archivo) return avisoDiario("Elige o toma una foto primero.", false);
   try {
     const imagen = await comprimir(archivo);
-    await guardarFoto({ fecha: hoyISO(), nota: $("#diario-nota").value.trim(), imagen });
+    await guardarFoto({ fecha: $("#diario-fecha").value || hoyISO(), nota: $("#diario-nota").value.trim(), imagen });
     e.target.reset();
     archivoElegido = null;
     $("#diario-vista").hidden = true;
@@ -237,7 +263,12 @@ async function compartir(fotos) {
 
 /* ---------- Inicio ---------- */
 if ("indexedDB" in window) {
-  abrirBD().then((b) => { bd = b; pintar(); }).catch(() => avisoDiario("No se pudo abrir el diario en este navegador.", false));
+  abrirBD().then(async (b) => { bd = b; pintar(); await cargarConsejos(); pintar(); }).catch(() => avisoDiario("No se pudo abrir el diario en este navegador.", false));
 } else {
   $("#diario").querySelector(".panel-diario").innerHTML = "<p class='nota'>Tu navegador no permite guardar el diario.</p>";
 }
+
+// Al volver a la app se descargan otra vez los consejos: si se editaron en la base de datos, el cambio aparece.
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState === "visible" && bd) { await cargarConsejos(); pintar(); }
+});

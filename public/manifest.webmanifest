@@ -1,7 +1,7 @@
 {
   "name": "Brote – Microhuerto para tu cocina",
   "short_name": "Brote",
-  "description": "Kit de microhuerto con compra en línea y seguimiento de pedido.",
+  "description": "Kit de microhuerto: compra en línea, seguimiento de pedido y diario fotográfico de tu cultivo con recordatorios.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -38,5 +38,62 @@
   "categories": [
     "shopping",
     "lifestyle"
+  ],
+  "orientation": "any",
+  "shortcuts": [
+    {
+      "name": "Mi huerto",
+      "short_name": "Mi huerto",
+      "description": "Abrir el diario de tu huerto",
+      "url": "./#diario",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Consultar mi pedido",
+      "short_name": "Mi pedido",
+      "description": "Ver el estado de tu pedido",
+      "url": "./#seguimiento",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Pedir un kit",
+      "short_name": "Pedir kit",
+      "url": "./#comprar",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "img/capturas/escritorio.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Diario de mi huerto en computadora"
+    },
+    {
+      "src": "img/capturas/movil.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Diario de mi huerto en el teléfono"
+    }
   ]
 }

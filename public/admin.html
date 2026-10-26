@@ -4,36 +4,89 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Administración – Brote</title>
+  <link rel="icon" href="img/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    .admin-sec{margin-top:2.5rem}
+    .admin-sec h2{font-size:1.6rem}
+    .pestanas{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}
+    .pestanas button[aria-selected="true"]{background:var(--musgo);color:var(--brote);border-color:var(--musgo)}
+    td textarea,td input{font-size:.88rem;padding:.4rem .5rem}
+    td textarea{min-height:4.4rem;resize:vertical}
+    .num{font-family:var(--serif);font-size:1.2rem;color:var(--musgo);text-align:center}
+    .resumen{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0}
+    .resumen div{background:#fff;border:1px solid var(--linea);border-radius:12px;padding:.8rem 1.2rem;min-width:150px}
+    .resumen strong{display:block;font-family:var(--serif);font-size:1.8rem;color:var(--musgo)}
+  </style>
 </head>
 <body>
 <main class="contenedor" style="padding:2rem 0">
-  <h1 style="color:var(--oscuro)">Pedidos de Brote</h1>
+  <h1 style="color:var(--oscuro)">Administración de Brote</h1>
   <form id="f-clave" style="grid-template-columns:1fr auto;margin:1rem 0">
     <input type="password" id="clave" placeholder="Clave de administrador" required>
     <button class="btn" type="submit">Entrar</button>
   </form>
   <div id="msg"></div>
-  <div class="tabla">
-    <table id="tabla" hidden>
-      <thead><tr><th>Folio</th><th>Cliente</th><th>Correo</th><th>Envío</th><th>Kits</th><th>Total</th><th>Pago</th><th>Estado</th></tr></thead>
-      <tbody></tbody>
-    </table>
+
+  <div id="panel" hidden>
+    <div class="resumen">
+      <div><strong id="n-pedidos">0</strong>Pedidos</div>
+      <div><strong id="n-consejos">0</strong>Consejos de cultivo</div>
+      <div><strong id="n-suscripciones">0</strong>Suscripciones push</div>
+    </div>
+    <div class="pestanas" role="tablist">
+      <button class="btn btn-claro btn-chico" role="tab" data-p="pedidos" aria-selected="true">Pedidos</button>
+      <button class="btn btn-claro btn-chico" role="tab" data-p="consejos" aria-selected="false">Consejos del diario</button>
+      <button class="btn btn-claro btn-chico" role="tab" data-p="push" aria-selected="false">Notificaciones push</button>
+    </div>
+
+    <section id="p-pedidos" class="admin-sec">
+      <h2>Pedidos</h2>
+      <div class="tabla"><table id="tabla">
+        <thead><tr><th>Folio</th><th>Cliente</th><th>Correo</th><th>Envío</th><th>Kits</th><th>Total</th><th>Pago</th><th>Estado</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </section>
+
+    <section id="p-consejos" class="admin-sec" hidden>
+      <h2>Consejos del diario (tabla Consejos)</h2>
+      <p class="nota">Cada registro es el consejo que ve el usuario en «Mi huerto» según el día de su cultivo, y el que recibe en la notificación de la mañana. Al guardar, el cambio aparece en la app la próxima vez que se abre.</p>
+      <div class="tabla"><table id="t-consejos">
+        <thead><tr><th>Día</th><th>Etapa</th><th style="width:20%">Título</th><th style="width:38%">Consejo</th><th style="width:22%">Riego</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </section>
+
+    <section id="p-push" class="admin-sec" hidden>
+      <h2>Notificaciones push</h2>
+      <form id="f-push" style="max-width:640px">
+        <label>Título <input name="titulo" maxlength="80" required value="Brote"></label>
+        <label>Mensaje <textarea name="cuerpo" maxlength="240" required>¡Ya llegó la nueva temporada de semillas! Revisa tu huerto y toma la foto de hoy.</textarea></label>
+        <button class="btn" type="submit">Enviar a todos los suscritos</button>
+        <div id="push-msg" role="status"></div>
+      </form>
+      <h3 style="margin-top:2rem">Suscripciones (tabla Suscripciones)</h3>
+      <div class="tabla"><table id="t-sus">
+        <thead><tr><th>#</th><th>Plataforma</th><th>Fecha de siembra</th><th>Último recordatorio</th><th>Registrada</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </section>
   </div>
 </main>
 <script>
 const $ = (s) => document.querySelector(s);
 const ESTADOS = ["Recibido", "Preparando", "Enviado", "Entregado", "Cancelado"];
 const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fecha = (iso) => (iso ? new Date(iso).toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" }) : "—");
 let clave = "";
+const api = (url, op = {}) => fetch(url, { ...op, headers: { "Content-Type": "application/json", "x-admin-key": clave, ...(op.headers || {}) } });
+const aviso = (el, ok, t) => { el.className = ok ? "ok" : "error"; el.textContent = t; };
 
-async function cargar() {
-  const r = await fetch("/api/admin/pedidos", { headers: { "x-admin-key": clave } });
-  if (!r.ok) { $("#msg").className = "error"; $("#msg").textContent = "Clave incorrecta"; return; }
+async function cargarPedidos() {
+  const r = await api("/api/admin/pedidos");
+  if (!r.ok) return false;
   const filas = await r.json();
-  $("#msg").className = "ok";
-  $("#msg").textContent = `${filas.length} pedido(s)`;
-  $("#tabla").hidden = false;
+  $("#n-pedidos").textContent = filas.length;
   $("#tabla tbody").innerHTML = filas.map((p) => `
     <tr>
       <td>${esc(p.Folio)}</td><td>${esc(p.Nombre)}<br><small>${esc(p.Telefono)}</small></td>
@@ -43,17 +96,69 @@ async function cargar() {
         ${ESTADOS.map((s) => `<option${s === p.Estado ? " selected" : ""}>${s}</option>`).join("")}
       </select></td>
     </tr>`).join("");
+  return true;
 }
 
-$("#f-clave").onsubmit = (e) => { e.preventDefault(); clave = $("#clave").value; cargar(); };
+async function cargarConsejos() {
+  const filas = await (await fetch("/api/consejos", { cache: "no-store" })).json();
+  $("#n-consejos").textContent = filas.length;
+  $("#t-consejos tbody").innerHTML = filas.map((c) => `
+    <tr data-dia="${c.Dia}">
+      <td class="num">${c.Dia}</td><td>${esc(c.Etapa)}</td>
+      <td><input name="titulo" maxlength="80" value="${esc(c.Titulo)}"></td>
+      <td><textarea name="texto" maxlength="400">${esc(c.Texto)}</textarea></td>
+      <td><textarea name="riego" maxlength="120">${esc(c.Riego)}</textarea></td>
+      <td><button class="btn-mini" data-guardar="${c.Dia}" type="button">Guardar</button><br><small>${fecha(c.Actualizado)}</small></td>
+    </tr>`).join("");
+}
+
+async function cargarSuscripciones() {
+  const filas = await (await api("/api/admin/suscripciones")).json();
+  $("#n-suscripciones").textContent = filas.length;
+  $("#t-sus tbody").innerHTML = filas.length ? filas.map((s) => `
+    <tr><td>${s.IdSuscripcion}</td><td>${esc(s.Plataforma || "—")}</td><td>${esc(s.Siembra || "—")}</td><td>${esc(s.UltimoAviso || "—")}</td><td>${fecha(s.Fecha)}</td></tr>`).join("")
+    : `<tr><td colspan="5">Todavía no hay suscripciones. Actívalas en «Mi huerto» desde un teléfono.</td></tr>`;
+}
+
+$("#f-clave").onsubmit = async (e) => {
+  e.preventDefault();
+  clave = $("#clave").value;
+  if (!(await cargarPedidos())) return aviso($("#msg"), false, "Clave incorrecta");
+  aviso($("#msg"), true, "Sesión iniciada");
+  $("#f-clave").hidden = true;
+  $("#panel").hidden = false;
+  cargarConsejos();
+  cargarSuscripciones();
+};
+
+$(".pestanas").onclick = (e) => {
+  const b = e.target.closest("[data-p]");
+  if (!b) return;
+  document.querySelectorAll(".pestanas button").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+  ["pedidos", "consejos", "push"].forEach((p) => ($("#p-" + p).hidden = p !== b.dataset.p));
+};
 
 $("#tabla").onchange = async (e) => {
   if (!e.target.matches("select")) return;
-  await fetch(`/api/admin/pedidos/${e.target.dataset.id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", "x-admin-key": clave },
-    body: JSON.stringify({ estado: e.target.value }),
-  });
+  await api(`/api/admin/pedidos/${e.target.dataset.id}`, { method: "PUT", body: JSON.stringify({ estado: e.target.value }) });
+};
+
+$("#t-consejos").onclick = async (e) => {
+  const b = e.target.closest("[data-guardar]");
+  if (!b) return;
+  const fila = b.closest("tr");
+  const datos = Object.fromEntries(["titulo", "texto", "riego"].map((n) => [n, fila.querySelector(`[name=${n}]`).value]));
+  const r = await api(`/api/admin/consejos/${b.dataset.guardar}`, { method: "PUT", body: JSON.stringify(datos) });
+  aviso($("#msg"), r.ok, r.ok ? `Consejo del día ${b.dataset.guardar} actualizado en la base de datos.` : (await r.json()).error);
+  if (r.ok) cargarConsejos();
+};
+
+$("#f-push").onsubmit = async (e) => {
+  e.preventDefault();
+  const r = await api("/api/admin/push", { method: "POST", body: JSON.stringify(Object.fromEntries(new FormData(e.target))) });
+  const d = await r.json();
+  aviso($("#push-msg"), r.ok, r.ok ? `Notificación enviada a ${d.enviadas} de ${d.total} suscripción(es).` : d.error);
+  cargarSuscripciones();
 };
 </script>
 </body>

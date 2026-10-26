@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pruebas de la app – Brote</title>
+  <meta name="theme-color" content="#15352a">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    .pruebas{list-style:none;padding:0;display:grid;gap:.6rem;margin:1.5rem 0}
+    .pruebas li{display:grid;grid-template-columns:2.2rem 1fr auto;gap:.8rem;align-items:start;background:#fff;border:1px solid var(--linea);border-radius:12px;padding:.8rem 1rem}
+    .pruebas .ic{width:2rem;height:2rem;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;background:#9aa69f}
+    .pruebas .ok .ic{background:var(--hoja)} .pruebas .mal .ic{background:#b42318} .pruebas .aviso .ic{background:var(--arcilla)}
+    .pruebas h3{font-family:var(--sans);font-size:1rem;margin:0}
+    .pruebas p{margin:.15rem 0 0;font-size:.9rem;color:var(--suave)}
+    .pruebas .det{font-size:.85rem;font-weight:600;color:var(--musgo);text-align:right;max-width:16rem}
+    .marcador{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;background:var(--musgo);color:#fff;border-radius:var(--radio);padding:1.2rem 1.5rem;margin-top:1rem}
+    .marcador strong{font-family:var(--serif);font-size:2.4rem;color:var(--brote)}
+    .funcionales{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin:1rem 0 2rem}
+    .funcionales article{background:#fff;border:1px solid var(--linea);border-radius:var(--radio);padding:1rem;display:grid;gap:.6rem;align-content:start}
+    .funcionales h3{font-size:1.05rem;margin:0}
+    .funcionales p{margin:0;font-size:.9rem;color:var(--suave)}
+    #tarjeta-prueba{width:100%;border-radius:10px;border:1px solid var(--linea)}
+    .encabezado{position:static}
+    @media(max-width:520px){.pruebas li{grid-template-columns:2rem 1fr}.pruebas .det{grid-column:2;text-align:left}}
+  </style>
+</head>
+<body>
+<header class="encabezado">
+  <div class="contenedor barra">
+    <a class="marca" href="./"><img src="img/logo.svg" alt="" width="38" height="38"><span>Brote</span></a>
+    <a class="btn btn-chico" href="./#diario">Ir a Mi huerto</a>
+  </div>
+</header>
+<main class="contenedor" style="padding:2rem 0 3rem">
+  <h1 style="font-size:clamp(1.8rem,4vw,2.6rem)">Pruebas de la aplicación</h1>
+  <p>Esta página revisa, en el dispositivo donde se abre, que Brote cumple las características de una Aplicación Web Progresiva y que la innovación «Diario de mi huerto» funciona.</p>
+  <div class="marcador"><strong id="puntaje">…</strong><div><b>pruebas superadas</b><br><span id="plataforma"></span></div></div>
+
+  <h2 style="margin-top:2rem">Pruebas automáticas</h2>
+  <ol id="lista" class="pruebas"></ol>
+
+  <h2>Pruebas de funcionamiento</h2>
+  <div class="funcionales">
+    <article>
+      <h3>Consejo del día</h3>
+      <p>Lee la tabla Consejos de la base de datos del servidor.</p>
+      <select id="f-dia"></select>
+      <button class="btn btn-chico" id="f-consejo" type="button">Consultar</button>
+      <div id="r-consejo" role="status"></div>
+    </article>
+    <article>
+      <h3>Tarjeta para compartir</h3>
+      <p>Genera con canvas una tarjeta con una ilustración del huerto.</p>
+      <button class="btn btn-chico" id="f-tarjeta" type="button">Generar tarjeta</button>
+      <img id="tarjeta-prueba" alt="Tarjeta de prueba" hidden>
+      <button class="btn btn-claro btn-chico" id="f-compartir" type="button" hidden>Compartir tarjeta</button>
+      <div id="r-tarjeta" role="status"></div>
+    </article>
+    <article>
+      <h3>Notificación</h3>
+      <p>Muestra una notificación desde el Service Worker de la app.</p>
+      <button class="btn btn-chico" id="f-noti" type="button">Mostrar notificación</button>
+      <div id="r-noti" role="status"></div>
+    </article>
+  </div>
+  <p><a href="./">Volver a Brote</a></p>
+</main>
+<script src="js/pruebas.js"></script>
+</body>
+</html>

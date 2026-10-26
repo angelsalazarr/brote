@@ -4,7 +4,7 @@
    - DINAMICO: páginas e imágenes que se piden después (network first con respaldo en caché).
    - API: respuestas GET de la API pública (stale-while-revalidate para /api/config
      y network first para el seguimiento de pedidos, así se puede consultar sin conexión). */
-const VERSION = "v5";
+const VERSION = "v6";
 const ESTATICO = `brote-estatico-${VERSION}`;
 const DINAMICO = `brote-dinamico-${VERSION}`;
 const API = `brote-api-${VERSION}`;
@@ -13,7 +13,7 @@ const LIMITE_DINAMICO = 40; // máximo de entradas en la caché dinámica
 
 const PRECARGA = [
   "./", "index.html", "offline.html", "css/estilos.css",
-  "js/ui.js", "js/pedidos.js", "js/pwa.js", "js/cache.js", "js/diario.js",
+  "js/ui.js", "js/pedidos.js", "js/pwa.js", "js/cache.js", "js/diario.js", "js/push.js", "pruebas.html", "js/pruebas.js",
   "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png",
   "img/logo.svg", "img/etapa-0.svg", "img/etapa-1.svg", "img/etapa-2.svg", "img/etapa-3.svg", "img/kit.svg",
 ];
@@ -96,6 +96,7 @@ self.addEventListener("fetch", (e) => {
   if (req.headers.has("range")) return;                                 // el video se transmite por partes
 
   if (url.pathname === "/api/config") return e.respondWith(staleWhileRevalidate(req));
+  if (url.pathname === "/api/consejos") return e.respondWith(networkFirst(req, API)); // cambios de la base al instante
   if (url.pathname.startsWith("/api/pedidos/")) return e.respondWith(networkFirst(req, API));
   if (url.pathname.startsWith("/api/")) return;
 
@@ -109,4 +110,34 @@ self.addEventListener("fetch", (e) => {
 /* ---------- Mensajes desde la página ---------- */
 self.addEventListener("message", (e) => {
   if (e.data === "saltar-espera") self.skipWaiting();
+  if (e.data === "version") e.source.postMessage({ version: VERSION });
+});
+
+/* ---------- Notificaciones push ---------- */
+self.addEventListener("push", (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch { d = { cuerpo: e.data && e.data.text() }; }
+  e.waitUntil(
+    self.registration.showNotification(d.titulo || "Brote", {
+      body: d.cuerpo || "Revisa cómo va tu huerto.",
+      icon: "icons/icon-192.png",
+      badge: "icons/icon-192.png",
+      tag: d.etiqueta || "brote",
+      data: { url: d.url || "/" },
+      lang: "es",
+    })
+  );
+});
+
+// Al tocar la notificación se abre (o se enfoca) la app en el diario.
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  const destino = new URL(e.notification.data?.url || "/", self.location.origin).href;
+  e.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((ventanas) => {
+      const abierta = ventanas.find((v) => v.url.startsWith(self.location.origin));
+      if (abierta) return abierta.navigate(destino).then((v) => (v || abierta).focus());
+      return self.clients.openWindow(destino);
+    })
+  );
 });

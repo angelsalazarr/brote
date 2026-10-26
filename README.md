@@ -12,7 +12,7 @@ También puedes abrir `public/index.html` directo en el navegador: el sitio func
 ## Estructura
 - `public/index.html`: estructura de la página (encabezado, navegación, secciones y pie de página).
 - `public/css/estilos.css`: estilos organizados en secciones numeradas, con la paleta en variables.
-- `public/js/ui.js`: menú móvil y etapas del cultivo. `pedidos.js`: pedidos y seguimiento. `pwa.js`: app instalable. `cache.js`: panel de la caché. `diario.js`: diario de fotos y compartir.
+- `public/js/ui.js`: menú móvil y etapas del cultivo. `pedidos.js`: pedidos y seguimiento. `pwa.js`: app instalable. `cache.js`: panel de la caché. `diario.js`: diario de fotos y compartir. `push.js`: recordatorios push. `pruebas.js`: página de pruebas.
 - `public/img` y `public/media`: ilustraciones y video. `herramientas/generar-recursos.py` los vuelve a generar.
 - `server.js`: servidor Express con base de datos SQLite.
 
@@ -33,6 +33,17 @@ La sección «Sin conexión» de la página (`public/js/cache.js`) muestra lo gu
 La sección «Mi huerto» (`public/js/diario.js`) permite registrar el día de siembra y tomar una foto diaria de la planta. Las fotos se reducen a 1280 px y se guardan en el dispositivo con IndexedDB (base `brote-diario`), así que funcionan sin conexión y no se suben al servidor. La app muestra el día del cultivo, la etapa y cuántos días faltan para la primera cosecha.
 
 El botón «Compartir mi progreso» genera con canvas una tarjeta de hasta 4 fotos y la comparte con la Web Share API (WhatsApp, Instagram, etc.). Si el navegador no permite compartir archivos, la tarjeta se descarga.
+
+## Consejos del diario (base de datos)
+La tabla `Consejos` guarda un consejo de cuidado para cada día del cultivo (día 0 al 14, 15 registros). Se carga sola la primera vez que arranca el servidor. La sección «Mi huerto» muestra el consejo que corresponde al día del usuario, y el administrador puede editarlo en `/admin.html` › «Consejos del diario». El cambio aparece en la app la próxima vez que se abre, porque `/api/consejos` usa la estrategia *network first*.
+
+## Notificaciones push
+En «Mi huerto», el botón «Activar recordatorios» pide permiso, crea una suscripción con la Push API y la guarda en la tabla `Suscripciones`. Cada mañana (después de las 9:00, hora de México) el servidor envía con `web-push` el consejo del día de cada usuario. Desde `/admin.html` › «Notificaciones push» se puede enviar un aviso a todos.
+
+Las llaves VAPID se generan una vez y se guardan en la tabla `Configuracion`; también se pueden definir con `VAPID_PUBLIC_KEY` y `VAPID_PRIVATE_KEY`. En iPhone las notificaciones funcionan solo con la app instalada en la pantalla de inicio (iOS 16.4 o superior). En el plan gratis de Render el servidor se duerme tras 15 minutos sin visitas, así que el recordatorio diario se envía cuando el servidor vuelve a estar activo.
+
+## Pruebas
+`/pruebas.html` revisa en el dispositivo cada característica de la PWA (HTTPS, manifiesto, iconos, Service Worker, caché, instalación, base de datos, IndexedDB, cámara, compartir, notificaciones y push) y permite probar el consejo del día, la tarjeta para compartir y una notificación.
 
 ## Publicarla gratis con pedidos y seguimiento funcionando
 Render ejecuta el servidor y Turso guarda los pedidos de forma permanente (Render por sí solo borra los archivos al reiniciar).

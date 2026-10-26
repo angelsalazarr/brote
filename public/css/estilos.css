@@ -147,7 +147,20 @@ code{background:var(--salvia);padding:.05rem .35rem;border-radius:5px;font-size:
 .diario-foto p{margin:.3rem 0;font-size:.95rem;color:var(--tinta)}
 .diario-acciones{display:flex;gap:.5rem;margin-top:.4rem}
 
-/* ===== 14. Responsivo ===== */
+/* ===== 14. Consejo del día, recordatorios y actualización ===== */
+.diario-consejo{margin-top:1.4rem;background:#fff;border:1px solid var(--linea);border-left:5px solid var(--brote);border-radius:4px var(--radio) var(--radio) 4px;padding:1rem 1.2rem;max-width:520px}
+.diario-consejo .consejo-dia{margin:0;font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--hoja)}
+.diario-consejo h3{margin:.2rem 0 .3rem}
+.diario-consejo p{margin:.3rem 0}
+.consejo-riego{color:var(--suave);font-size:.95rem}
+.recordatorios{margin-top:1.4rem;padding:1rem 1.2rem;background:var(--salvia);border-radius:var(--radio);max-width:520px}
+.recordatorios h3{font-size:1.05rem}
+.recordatorios .acciones{align-items:center;margin-top:.6rem}
+.recordatorios #push-aviso{margin-top:.6rem}
+.derechos a{color:var(--brote)}
+.toast{position:fixed;left:50%;bottom:1.2rem;transform:translateX(-50%);z-index:50;display:flex;gap:1rem;align-items:center;background:var(--musgo);color:#fff;padding:.8rem 1rem .8rem 1.3rem;border-radius:999px;box-shadow:0 8px 30px #0004;width:max-content;max-width:calc(100% - 32px)}
+
+/* ===== 15. Responsivo ===== */
 @media(max-width:1024px){ /* laptops pequeñas y tabletas horizontales */
   nav ul{gap:1.1rem}
   .hero-grid{gap:2rem}
