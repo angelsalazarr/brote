@@ -152,6 +152,7 @@ setInterval(async () => {
 }, 36e5);
 
 const app = express();
+app.set("trust proxy", 1); // Render pone un proxy delante: así req.ip es la IP real
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -233,11 +234,21 @@ app.post("/api/push/prueba", async (req, res) => {
 });
 
 /* ---------- Administrador ---------- */
+// Autenticación del administrador: clave en el encabezado x-admin-key, comparada en tiempo constante.
+// Tras 5 intentos fallidos desde la misma IP se bloquea 10 minutos.
+const intentos = new Map();
 function admin(req, res, next) {
+  const ip = req.ip, ahora = Date.now();
+  const reg = intentos.get(ip);
+  if (reg && reg.hasta > ahora) return res.status(429).json({ error: "Demasiados intentos. Espera 10 minutos." });
   const a = Buffer.from(String(req.get("x-admin-key") || ""));
   const b = Buffer.from(ADMIN_KEY);
-  if (a.length !== b.length || !crypto.timingSafeEqual(a, b))
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+    const n = (reg ? reg.n : 0) + 1;
+    intentos.set(ip, n >= 5 ? { n: 0, hasta: ahora + 10 * 6e4 } : { n, hasta: 0 });
     return res.status(401).json({ error: "Clave incorrecta" });
+  }
+  intentos.delete(ip);
   next();
 }
 

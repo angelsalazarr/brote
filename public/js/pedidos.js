@@ -29,26 +29,102 @@ function pedidoLocal(datos) {
   return { folio, total: cantidad * precio };
 }
 
+/* ---------- Pedidos sin conexión: cola local y sincronización ---------- */
+const COLA = "brote-pedidos-pendientes";   // pedidos hechos sin internet
+const MIS_PEDIDOS = "brote-mis-pedidos";   // folios confirmados por el servidor
+const leer = (k) => { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch { return []; } };
+const escribir = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const conServidor = location.protocol.startsWith("http");
+
+function pintarPendientes() {
+  const cola = leer(COLA), ul = $("#pendientes");
+  ul.hidden = !cola.length;
+  ul.innerHTML = cola.length ? "<li><strong>Pedidos guardados sin conexión</strong></li>" : "";
+  for (const p of cola) {
+    const li = document.createElement("li");
+    li.textContent = `${p.datos.cantidad} kit(s) para ${p.datos.nombre} · guardado ${new Date(p.guardado).toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" })} · se enviará al recuperar la conexión`;
+    ul.append(li);
+  }
+}
+
+function recordarPedido(folio, correo, total) {
+  const mis = leer(MIS_PEDIDOS).filter((p) => p.folio !== folio);
+  mis.unshift({ folio, correo, total, fecha: new Date().toISOString() });
+  escribir(MIS_PEDIDOS, mis.slice(0, 5));
+  pintarMisPedidos();
+}
+
+function pintarMisPedidos() {
+  const mis = leer(MIS_PEDIDOS), caja = $("#mis-pedidos");
+  caja.hidden = !mis.length;
+  caja.innerHTML = mis.length ? "<p><strong>Tus pedidos en este dispositivo</strong></p>" : "";
+  for (const p of mis) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "btn-mini";
+    b.textContent = `${p.folio} · ${dinero(p.total)}`;
+    b.onclick = () => { $("#form-seg [name=folio]").value = p.folio; $("#form-seg [name=correo]").value = p.correo; $("#form-seg").requestSubmit(); };
+    caja.append(b);
+  }
+}
+
+async function enviarPedido(datos) {
+  const r = await fetch("/api/pedidos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(datos) });
+  return { ok: r.ok, d: await r.json() };
+}
+
+// Envía los pedidos guardados en cuanto hay conexión. Se ejecuta al cargar, al volver internet y al regresar a la app.
+let sincronizando = false;
+async function sincronizarPedidos() {
+  if (sincronizando || !navigator.onLine || !conServidor) return;
+  sincronizando = true;
+  try {
+    for (const p of leer(COLA)) {
+      let res;
+      try { res = await enviarPedido(p.datos); } catch { break; } // sigue sin conexión
+      escribir(COLA, leer(COLA).filter((x) => x.id !== p.id));
+      if (res.ok) {
+        recordarPedido(res.d.folio, p.datos.correo.trim().toLowerCase(), res.d.total);
+        mostrar($("#resultado"), true, `Se recuperó la conexión y se envió tu pedido guardado. Folio ${res.d.folio}. Total: ${dinero(res.d.total)}.`);
+        avisarLocal("Brote · Pedido enviado", `Tu pedido guardado sin conexión ya se registró. Folio ${res.d.folio}.`);
+      } else mostrar($("#resultado"), false, `Un pedido guardado no se pudo registrar: ${res.d.error}`);
+    }
+  } finally { sincronizando = false; pintarPendientes(); }
+}
+
+async function avisarLocal(titulo, cuerpo) {
+  if (!("Notification" in window) || Notification.permission !== "granted" || !navigator.serviceWorker) return;
+  const reg = await navigator.serviceWorker.ready;
+  reg.showNotification(titulo, { body: cuerpo, icon: "icons/icon-192.png", tag: "pedido", data: { url: "/#seguimiento" } });
+}
+
 $("#form-pedido").onsubmit = async (e) => {
   e.preventDefault();
   const salida = $("#resultado");
   const datos = Object.fromEntries(new FormData(e.target));
-  let d;
-  try {
-    const r = await fetch("/api/pedidos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datos),
-    });
-    d = await r.json();
-    if (!r.ok) return mostrar(salida, false, d.error);
-  } catch {
-    d = pedidoLocal(datos); /* modo demostración sin servidor */
+  if (!conServidor) { /* modo demostración al abrir index.html directo */
+    const d = pedidoLocal(datos);
+    return mostrar(salida, true, `¡Pedido recibido! Tu folio es ${d.folio}. Total: ${dinero(d.total)}.`);
   }
-  mostrar(salida, true, `¡Pedido recibido! Tu folio es ${d.folio}. Total: ${dinero(d.total)}. Guárdalo para consultar tu envío.`);
+  try {
+    if (!navigator.onLine) throw new Error("sin conexión");
+    const { ok, d } = await enviarPedido(datos);
+    if (!ok) return mostrar(salida, false, d.error);
+    recordarPedido(d.folio, datos.correo.trim().toLowerCase(), d.total);
+    mostrar(salida, true, `¡Pedido recibido! Tu folio es ${d.folio}. Total: ${dinero(d.total)}. Guárdalo para consultar tu envío.`);
+  } catch {
+    escribir(COLA, [...leer(COLA), { id: Date.now(), guardado: new Date().toISOString(), datos }]);
+    mostrar(salida, true, "Estás sin conexión. Tu pedido quedó guardado en este dispositivo y se enviará solo en cuanto vuelva el internet.");
+    pintarPendientes();
+  }
   e.target.reset();
   actualizarTotal();
 };
+
+addEventListener("online", sincronizarPedidos);
+document.addEventListener("visibilitychange", () => document.visibilityState === "visible" && sincronizarPedidos());
+pintarPendientes();
+pintarMisPedidos();
+sincronizarPedidos();
 
 /* ---------- Seguimiento ---------- */
 $("#form-seg").onsubmit = async (e) => {

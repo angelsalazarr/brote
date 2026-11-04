@@ -21,7 +21,10 @@
 </head>
 <body>
 <main class="contenedor" style="padding:2rem 0">
-  <h1 style="color:var(--oscuro)">Administración de Brote</h1>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+    <h1 style="color:var(--oscuro)">Administración de Brote</h1>
+    <button id="salir" class="btn btn-claro btn-chico" type="button" hidden>Cerrar sesión</button>
+  </div>
   <form id="f-clave" style="grid-template-columns:1fr auto;margin:1rem 0">
     <input type="password" id="clave" placeholder="Clave de administrador" required>
     <button class="btn" type="submit">Entrar</button>
@@ -120,16 +123,34 @@ async function cargarSuscripciones() {
     : `<tr><td colspan="5">Todavía no hay suscripciones. Actívalas en «Mi huerto» desde un teléfono.</td></tr>`;
 }
 
-$("#f-clave").onsubmit = async (e) => {
-  e.preventDefault();
-  clave = $("#clave").value;
-  if (!(await cargarPedidos())) return aviso($("#msg"), false, "Clave incorrecta");
-  aviso($("#msg"), true, "Sesión iniciada");
+// La sesión dura mientras la pestaña esté abierta (sessionStorage): sobrevive a recargas y se borra al cerrar la pestaña.
+const SESION = "brote-admin";
+async function entrar(c, recordada) {
+  clave = c;
+  if (!(await cargarPedidos())) {
+    try { sessionStorage.removeItem(SESION); } catch {}
+    return aviso($("#msg"), false, recordada ? "La sesión guardada ya no es válida. Escribe la clave de nuevo." : "Clave incorrecta");
+  }
+  try { sessionStorage.setItem(SESION, c); } catch {}
+  aviso($("#msg"), true, recordada ? "Sesión recuperada: seguías dentro del panel." : "Sesión iniciada");
   $("#f-clave").hidden = true;
   $("#panel").hidden = false;
+  $("#salir").hidden = false;
   cargarConsejos();
   cargarSuscripciones();
+}
+
+$("#f-clave").onsubmit = (e) => { e.preventDefault(); entrar($("#clave").value, false); };
+
+$("#salir").onclick = () => {
+  try { sessionStorage.removeItem(SESION); } catch {}
+  clave = "";
+  $("#panel").hidden = true; $("#salir").hidden = true; $("#f-clave").hidden = false;
+  $("#clave").value = "";
+  aviso($("#msg"), true, "Sesión cerrada.");
 };
+
+try { const guardada = sessionStorage.getItem(SESION); if (guardada) entrar(guardada, true); } catch {}
 
 $(".pestanas").onclick = (e) => {
   const b = e.target.closest("[data-p]");

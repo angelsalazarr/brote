@@ -45,6 +45,11 @@ Las llaves VAPID se generan una vez y se guardan en la tabla `Configuracion`; ta
 ## Pruebas
 `/pruebas.html` revisa en el dispositivo cada característica de la PWA (HTTPS, manifiesto, iconos, Service Worker, caché, instalación, base de datos, IndexedDB, cámara, compartir, notificaciones y push) y permite probar el consejo del día, la tarjeta para compartir y una notificación.
 
+## Pedidos sin conexión y sesión
+Si se hace un pedido sin internet, se guarda en el dispositivo (`localStorage`, clave `brote-pedidos-pendientes`) y se envía solo al recuperar la conexión (evento `online`, al volver a la app o al abrirla). Al enviarse se muestra el folio y una notificación local. Los folios confirmados se guardan en «Tus pedidos en este dispositivo» para consultarlos con un toque.
+
+El panel de administración conserva la sesión mientras la pestaña esté abierta (`sessionStorage`) y tiene botón «Cerrar sesión». El servidor bloquea 10 minutos una IP tras 5 claves incorrectas.
+
 ## Publicarla gratis con pedidos y seguimiento funcionando
 Render ejecuta el servidor y Turso guarda los pedidos de forma permanente (Render por sí solo borra los archivos al reiniciar).
 1. **Turso** (turso.tech): crea una cuenta, una base de datos llamada `brote` y copia su URL (empieza con `libsql://`) y un token de acceso.

@@ -160,7 +160,12 @@ code{background:var(--salvia);padding:.05rem .35rem;border-radius:5px;font-size:
 .derechos a{color:var(--brote)}
 .toast{position:fixed;left:50%;bottom:1.2rem;transform:translateX(-50%);z-index:50;display:flex;gap:1rem;align-items:center;background:var(--musgo);color:#fff;padding:.8rem 1rem .8rem 1.3rem;border-radius:999px;box-shadow:0 8px 30px #0004;width:max-content;max-width:calc(100% - 32px)}
 
-/* ===== 15. Responsivo ===== */
+/* ===== 15. Pedidos sin conexión y pedidos guardados ===== */
+.pendientes{list-style:none;padding:.8rem 1rem;margin:0;background:#fdf6e8;border:1px solid #ecd9b0;border-radius:10px;display:grid;gap:.3rem;font-size:.92rem}
+.mis-pedidos{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:1rem}
+.mis-pedidos p{width:100%;margin:0}
+
+/* ===== 16. Responsivo ===== */
 @media(max-width:1024px){ /* laptops pequeñas y tabletas horizontales */
   nav ul{gap:1.1rem}
   .hero-grid{gap:2rem}
